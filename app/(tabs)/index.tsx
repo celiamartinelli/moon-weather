@@ -6,6 +6,33 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import tw from "../../tw-rn";
 export default function HomeScreen() {
+  const fetchAstronomyData = async () => {
+    const apiKey = "80fde474ce3744a5bdb64249242509"; // Remplacez par votre clé API
+    const location = "Paris"; // Vous pouvez remplacer cela par une autre ville ou coordonnées
+    const date = "2024-09-25"; // Remplacez par la date souhaitée
+
+    const url = `http://api.weatherapi.com/v1/astronomy.json?key=${apiKey}&q=${location}&dt=${date}`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      console.log(data);
+
+      // Extraction des informations utiles sur la lune
+      const moonPhase = data.astronomy.astro.moon_phase;
+      const moonrise = data.astronomy.astro.moonrise;
+      const moonset = data.astronomy.astro.moonset;
+
+      console.log(`Phase lunaire: ${moonPhase}`);
+      console.log(`Lever de la lune: ${moonrise}`);
+      console.log(`Coucher de la lune: ${moonset}`);
+    } catch (error) {
+      console.error("Erreur lors de la requête API", error);
+    }
+  };
+
+  fetchAstronomyData();
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
