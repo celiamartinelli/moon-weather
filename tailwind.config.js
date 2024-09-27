@@ -7,6 +7,7 @@ module.exports = {
         celadon: "#77d7c9",
         lavande: "#c89eff",
         celeste: "#bbdcff",
+        bg: "#0d1126",
       },
       animation: {
         "slide-down": "slideDown 1s ease-in-out",
