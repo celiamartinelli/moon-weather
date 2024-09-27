@@ -14,6 +14,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import tw from "../../tw-rn";
 import LottieView from "lottie-react-native";
+import { AnimatedKeyboardOptions } from "react-native-reanimated";
 
 type MoonPhase =
   | "New Moon"
@@ -84,7 +85,7 @@ export default function HomeScreen() {
       const response = await fetch(url);
       const data = await response.json();
 
-      // console.log("Données de localisation et d'astronomie", data);
+      console.log("Données de localisation et d'astronomie", data);
 
       // Extraction des informations de localisation et d'astronomie
       const {
@@ -168,24 +169,13 @@ export default function HomeScreen() {
 
   return (
     <View style={tw`flex-1 relative pt-16 bg-bg `}>
-      <LottieView
-        style={{
-          width,
-          height,
-          position: "absolute",
-          top: 0,
-        }}
+      {/* <LottieView
+        resizeMode="cover"
         source={require("../../assets/images/animation/Background.json")}
         autoPlay
         loop
-      />
+      /> */}
       <View style={tw`flex-1 justify-center items-center`}>
-        {/* <ThemedView style={tw`mb-4`}>
-          <ThemedText style={tw`bg-celadon`} type="title">
-            Bonjour!
-          </ThemedText>
-          <HelloWave />
-        </ThemedView> */}
         <Image
           style={tw`w-70 h-70 mx-auto`}
           source={getMoonPhaseImage(moonData.moonPhase, location.lat)}
