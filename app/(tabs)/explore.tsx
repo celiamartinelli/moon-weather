@@ -8,43 +8,33 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import tw from "@/tw-rn";
 import LottieView from "lottie-react-native";
+import SearchBar from "../../components/SearchBar";
 
 export default function TabTwoScreen() {
   return (
-    <View style={tw`mt-10`}>
-      {/* <ParallaxScrollView
-    // headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
-    // headerImage={
-    //   <Ionicons size={310} name="code-slash" style={styles.headerImage} />
-    // }
-    > */}
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <LottieView
-        style={tw`w-50 h-50 mx-auto`}
-        source={require("../../assets/images/animation/Astronaute.json")}
-        autoPlay
-        loop
-      />
-      <ThemedText>
-        This app includes example code to help you get started.
-      </ThemedText>
+    <ParallaxScrollView
+      headerBackgroundColor={{ light: "#0d1126", dark: "#0d1126" }}
+      headerImage={
+        <LottieView
+          style={tw`w-full h-full mt-2 mx-auto absolute`}
+          source={require("../../assets/images/animation/Astronaute.json")}
+          autoPlay
+          loop
+        />
+      }
+    >
+      <ThemedView style={tw`bg-bg`}>
+        <ThemedView style={tw`bg-bg`}>
+          <ThemedText type="title">Explore</ThemedText>
+        </ThemedView>
+        <ThemedView>
+          <SearchBar />
+        </ThemedView>
 
-      {/* </ParallaxScrollView> */}
-    </View>
+        <ThemedText>
+          This app includes example code to help you get started.
+        </ThemedText>
+      </ThemedView>
+    </ParallaxScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  headerImage: {
-    color: "#808080",
-    bottom: -90,
-    left: -35,
-    position: "absolute",
-  },
-  titleContainer: {
-    flexDirection: "row",
-    gap: 8,
-  },
-});

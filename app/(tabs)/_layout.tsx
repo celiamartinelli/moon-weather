@@ -1,11 +1,8 @@
 import { Tabs } from "expo-router";
 import React from "react";
 import { Image } from "react-native";
-
-import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import Octicons from "@expo/vector-icons/Octicons";
 import tw from "@/tw-rn";
 
 export default function TabLayout() {
@@ -20,8 +17,8 @@ export default function TabLayout() {
           tw`bg-bg`,
           {
             borderTopWidth: 0, // Supprimer la ligne au-dessus de la barre d'onglets
-            elevation: 0, // Supprimer l'ombre sur Android
-            shadowOpacity: 0, // Supprimer l'ombre sur iOS
+            // elevation: 0, // Supprimer l'ombre sur Android
+            // shadowOpacity: 0, // Supprimer l'ombre sur iOS
           },
         ],
       }}
