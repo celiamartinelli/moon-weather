@@ -77,7 +77,7 @@ export default function HomeScreen() {
   const fetchAstronomyData = async () => {
     const apiKey = "1e005ffe6aaa4ae69a3125812242509"; // Remplacez par votre clé API
     const location = "Paris"; // Vous pouvez remplacer cela par une autre ville ou coordonnées
-    const date = "2024-08-18"; // Remplacez par la date souhaitée
+    const date = new Date().toISOString().split("T")[0]; // Remplacez par la date souhaitée
 
     const url = `http://api.weatherapi.com/v1/astronomy.json?key=${apiKey}&q=${location}&dt=${date}`;
 
