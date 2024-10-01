@@ -169,12 +169,12 @@ export default function HomeScreen() {
 
   return (
     <View style={tw`flex-1 relative pt-16 bg-bg `}>
-      {/* <LottieView
+      <LottieView
         resizeMode="cover"
         source={require("../../assets/images/animation/Background.json")}
         autoPlay
         loop
-      /> */}
+      />
       <View style={tw`flex-1 justify-center items-center`}>
         <Image
           style={tw`w-70 h-70 mx-auto`}
