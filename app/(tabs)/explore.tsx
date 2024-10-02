@@ -1,7 +1,5 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
-
 import {
   Button,
   TextInput,
@@ -13,18 +11,13 @@ import LottieView from "lottie-react-native";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-
 import tw from "@/tw-rn";
 
-type RootStackParamList = {
-  TabTwoScreen: undefined;
-  index: { latitude: string; longitude: string };
-};
-
 export default function TabTwoScreen() {
+  const navigation = useNavigation();
   const [cityName, setCityName] = useState<string | null>(null);
   const [results, setResults] = useState<any[]>([]);
-  const navigation = useNavigation();
+
   const fetchCoordinates = async (city: string) => {
     const response = await fetch(
       `https://nominatim.openstreetmap.org/search?q=${city}&format=json`
@@ -32,7 +25,6 @@ export default function TabTwoScreen() {
     const data = await response.json();
     console.log("data", JSON.stringify(data, null, 2));
 
-    // Mettre à jour les résultats avec les données obtenues
     const formattedResults = data.map((item: any) => ({
       name: item.name,
       displayName: item.display_name,
@@ -40,9 +32,8 @@ export default function TabTwoScreen() {
       longitude: item.lon,
     }));
 
-    setResults(formattedResults); // Mettre à jour l'état avec les résultats
+    setResults(formattedResults);
 
-    // Appel de la fonction pour obtenir le nom de la ville pour chaque résultat
     formattedResults.forEach((result: any) => {
       fetchCityFromCoordinates(result.latitude, result.longitude);
     });
@@ -54,7 +45,6 @@ export default function TabTwoScreen() {
     );
     const data = await response.json();
 
-    // Mettre à jour le nom de la ville basé sur les coordonnées
     if (data && data.address && data.address.city) {
       console.log("Nom de la ville :", data.address.city);
     }
@@ -68,9 +58,12 @@ export default function TabTwoScreen() {
     }
   };
 
-  const handlePress = (latitude: string, longitude: string) => {
-    navigation.navigate("index", { latitude, longitude });
+  const handlePress = (cityProps: string) => {
+    navigation.navigate("index", {
+      cityProps: cityName,
+    });
   };
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#0d1126", dark: "#0d1126" }}
@@ -102,8 +95,6 @@ export default function TabTwoScreen() {
             >
               <ThemedText>{item.name}</ThemedText>
               <ThemedText style={tw`text-xs`}>{item.displayName}</ThemedText>
-              {/* <ThemedText>Latitude: {item.latitude}</ThemedText>
-              <ThemedText>Longitude: {item.longitude}</ThemedText> */}
             </TouchableOpacity>
           ))}
         </ScrollView>
