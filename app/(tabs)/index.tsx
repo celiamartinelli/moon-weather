@@ -140,9 +140,9 @@ export default function HomeScreen() {
         moon_illumination,
         is_moon_up,
         is_sun_up,
-      } = data.astronomy.astro;
-      console.log("data.astronomy.astro", data.astronomy.astro);
-      const { name, region, country, localtime, lat } = data.location;
+      } = data?.astronomy?.astro;
+      // console.log("data.astronomy.astro", data.astronomy.astro);
+      const { name, region, country, localtime, lat } = data?.location;
 
       // Mise à jour de l'état avec les informations récupérées
       setMoonData({
