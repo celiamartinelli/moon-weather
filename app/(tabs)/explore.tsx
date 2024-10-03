@@ -6,6 +6,7 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
+  Text,
 } from "react-native";
 import LottieView from "lottie-react-native";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
@@ -80,7 +81,12 @@ export default function TabTwoScreen() {
             value={cityName || ""}
             onChangeText={setCityName}
           />
-          <Button title="Rechercher" onPress={handleSearch} />
+          <TouchableOpacity
+            style={tw`bg-blue-500 p-2 rounded-lg`}
+            onPress={handleSearch}
+          >
+            <Text style={tw`text-white`}>Rechercher</Text>
+          </TouchableOpacity>
         </View>
         <ScrollView>
           {results.map((item) => (

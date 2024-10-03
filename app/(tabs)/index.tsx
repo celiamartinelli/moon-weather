@@ -8,6 +8,7 @@ import {
   Button,
   ScrollView,
   ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
 import React, { useState } from "react";
 import { useEffect } from "react";
@@ -17,6 +18,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import tw from "../../tw-rn";
 import LottieView from "lottie-react-native";
+import Entypo from "@expo/vector-icons/Entypo";
 
 import { useRoute } from "@react-navigation/native";
 
@@ -97,6 +99,7 @@ export default function HomeScreen() {
   useEffect(() => {
     setCityName(cityProps);
   }, [cityProps]);
+
   const fetchDataCity = async () => {
     try {
       const response = await fetch(
@@ -175,6 +178,41 @@ export default function HomeScreen() {
     }
   };
 
+  const fecthAstronomyDataOnSevenDays = async () => {
+    const apiKey = "1e005ffe6aaa4ae69a3125812242509";
+    let city = cityName;
+    const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&days=7&aqi=no&alerts=no`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.error) {
+        return;
+      }
+
+      // Vérifiez que les données de prévision existent avant de les utiliser
+      if (data && data.forecast && data.forecast.forecastday) {
+        const astroData = data.forecast.forecastday.map((day: any) => ({
+          date: day.date,
+          moon_phase: day.astro.moon_phase,
+          moonrise: day.astro.moonrise,
+          moonset: day.astro.moonset,
+          sunrise: day.astro.sunrise,
+          sunset: day.astro.sunset,
+        }));
+        // Mettez à jour l'état avec les données astro
+        setAstroSevenData(astroData);
+      } else {
+        console.error(
+          "La réponse de l'API ne contient pas les données de prévision attendues."
+        );
+      }
+    } catch (error) {
+      console.error("Erreur lors de la requête API", error);
+    }
+  };
+
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -193,42 +231,14 @@ export default function HomeScreen() {
       }
       fetchAstronomyData();
       getMoonPhaseImage(moonData.moonPhase, location.lat);
+      setLoading(false);
+      fecthAstronomyDataOnSevenDays();
     })();
   }, [resetPosition, cityName]);
 
-  useEffect(() => {
-    const fecthAstronomyDataOnSevenDays = async () => {
-      const apiKey = "1e005ffe6aaa4ae69a3125812242509";
-      let city = cityName;
-      const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&days=7&aqi=no&alerts=no`;
-
-      try {
-        const response = await fetch(url);
-        const data = await response.json();
-
-        // Vérifiez que les données de prévision existent avant de les utiliser
-        if (data && data.forecast && data.forecast.forecastday) {
-          const astroData = data.forecast.forecastday.map((day: any) => ({
-            date: day.date,
-            moon_phase: day.astro.moon_phase,
-            moonrise: day.astro.moonrise,
-            moonset: day.astro.moonset,
-            sunrise: day.astro.sunrise,
-            sunset: day.astro.sunset,
-          }));
-          // Mettez à jour l'état avec les données astro
-          setAstroSevenData(astroData);
-        } else {
-          console.error(
-            "La réponse de l'API ne contient pas les données de prévision attendues."
-          );
-        }
-      } catch (error) {
-        console.error("Erreur lors de la requête API", error);
-      }
-    };
-    fecthAstronomyDataOnSevenDays();
-  }, [cityName, resetPosition]);
+  // useEffect(() => {
+  //   fecthAstronomyDataOnSevenDays();
+  // }, [cityName, resetPosition]);
 
   const MoonPhaseCard = ({ item }: { item: any }) => (
     <View
@@ -326,7 +336,7 @@ export default function HomeScreen() {
   return (
     <View style={tw`flex-1 relative pt-16 bg-bg`}>
       <LottieView
-        style={tw``}
+        style={tw`top-0`}
         resizeMode="cover"
         source={require("../../assets/images/animation/Background.json")}
         autoPlay
@@ -335,19 +345,28 @@ export default function HomeScreen() {
       <ScrollView>
         {loading ? (
           <LottieView
-            style={tw`w-50 h-50 mx-auto justify-center items-center`}
+            style={tw`w-50 h-50 mx-auto justify-end items-center`}
             source={require("../../assets/images/animation/loader.json")}
             autoPlay
             loop
           />
         ) : (
           <View style={tw`flex-1 justify-center items-center`}>
-            <Button
-              title="ici"
-              onPress={() => {
-                setResetPosition(true);
-              }}
-            />
+            <View style={tw`flex-row justify-end w-full`}>
+              <TouchableOpacity
+                style={tw`w-10 h-10 mr-4`}
+                onPress={() => {
+                  setResetPosition(true);
+                }}
+              >
+                <LottieView
+                  style={tw`w-10 h-10`}
+                  source={require("../../assets/images/animation/location.json")}
+                  autoPlay
+                  loop
+                />
+              </TouchableOpacity>
+            </View>
             <Image
               style={tw`w-70 h-70 mx-auto`}
               source={
@@ -357,6 +376,9 @@ export default function HomeScreen() {
             />
             <ThemedView style={tw`bg-inherit text-white`}>
               <ThemedText type="subtitle">{cityName}</ThemedText>
+              <ThemedText style={tw`font-bold`}>
+                Date locale: {location.localtime}
+              </ThemedText>
               <ThemedText type="subtitle">Données de la Lune</ThemedText>
 
               {loading ? (
