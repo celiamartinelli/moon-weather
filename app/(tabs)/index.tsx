@@ -6,6 +6,8 @@ import {
   ImageSourcePropType,
   Dimensions,
   Button,
+  ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import { useEffect } from "react";
@@ -85,18 +87,23 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const [cityName, setCityName] = useState<any | null>(null);
   const [urlImg, setUrlImg] = useState<string | null>(null);
+  const [resetPosition, setResetPosition] = useState(false);
+  const [astroSevenData, setAstroSevenData] = useState<any[]>([]);
 
   const route = useRoute();
   const { cityProps } = route.params || {};
-  console.log("cityProps", cityProps);
+  // console.log("cityProps", cityProps);
 
+  useEffect(() => {
+    setCityName(cityProps);
+  }, [cityProps]);
   const fetchDataCity = async () => {
     try {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
       );
       const data = await response.json();
-      console.log("data", data);
+      // console.log("data", data);
       setCityName(
         data.address.city || data.address.town || data.address.village
       );
@@ -116,21 +123,24 @@ export default function HomeScreen() {
     const apiKey = "1e005ffe6aaa4ae69a3125812242509";
     const date = new Date().toISOString().split("T")[0];
 
-    console.log("cityName", cityName);
+    // console.log("cityName", cityName);
 
-    const city = cityProps
-      ? cityProps
-      : cityName?.city || cityName?.town || cityName?.village;
-    console.log("city", city);
+    let city = cityName;
+    // console.log("city est la ", city);
+
     const url = `http://api.weatherapi.com/v1/astronomy.json?key=${apiKey}&q=${city}&dt=${date}`;
 
     try {
       const response = await fetch(url);
       const data = await response.json();
-
+      //
       // console.log("Données de localisation et d'astronomie", data);
 
+      if (data.error) {
+        return;
+      }
       // Extraction des informations de localisation et d'astronomie
+
       const {
         sunrise,
         sunset,
@@ -140,9 +150,9 @@ export default function HomeScreen() {
         moon_illumination,
         is_moon_up,
         is_sun_up,
-      } = data?.astronomy?.astro;
-      // console.log("data.astronomy.astro", data.astronomy.astro);
-      const { name, region, country, localtime, lat } = data?.location;
+      } = await data.astronomy.astro;
+
+      const { name, region, country, localtime, lat } = data.location;
 
       // Mise à jour de l'état avec les informations récupérées
       setMoonData({
@@ -158,6 +168,7 @@ export default function HomeScreen() {
 
       setLocation({ name, region, country, localtime, lat });
       setLoading(false);
+      setResetPosition(false);
     } catch (error) {
       console.error("Erreur lors de la requête API", error);
       setLoading(false);
@@ -173,19 +184,82 @@ export default function HomeScreen() {
       }
 
       let location = await Location.getCurrentPositionAsync({});
-      console.log("location", location);
+      // console.log("location", location);
 
       setLatitude(location.coords.latitude);
       setLongitude(location.coords.longitude);
-      await fetchDataCity();
+      if (!cityProps || resetPosition) {
+        await fetchDataCity();
+      }
       fetchAstronomyData();
+      getMoonPhaseImage(moonData.moonPhase, location.lat);
     })();
-  }, [cityProps]);
+  }, [resetPosition, cityName]);
 
   useEffect(() => {
-    getMoonPhaseImage(moonData.moonPhase, location.lat);
-  }, []);
+    const fecthAstronomyDataOnSevenDays = async () => {
+      const apiKey = "1e005ffe6aaa4ae69a3125812242509";
+      let city = cityName;
+      const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&days=7&aqi=no&alerts=no`;
 
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        // Vérifiez que les données de prévision existent avant de les utiliser
+        if (data && data.forecast && data.forecast.forecastday) {
+          const astroData = data.forecast.forecastday.map((day: any) => ({
+            date: day.date,
+            moon_phase: day.astro.moon_phase,
+            moonrise: day.astro.moonrise,
+            moonset: day.astro.moonset,
+            sunrise: day.astro.sunrise,
+            sunset: day.astro.sunset,
+          }));
+          // Mettez à jour l'état avec les données astro
+          setAstroSevenData(astroData);
+        } else {
+          console.error(
+            "La réponse de l'API ne contient pas les données de prévision attendues."
+          );
+        }
+      } catch (error) {
+        console.error("Erreur lors de la requête API", error);
+      }
+    };
+    fecthAstronomyDataOnSevenDays();
+  }, [cityName, resetPosition]);
+
+  const MoonPhaseCard = ({ item }: { item: any }) => (
+    <View
+      style={tw`border-2 border-white rounded-lg p-4 m-2 flex-1 items-center shadow-md`}
+    >
+      <Image
+        style={tw`w-20 h-20 mx-auto`}
+        source={
+          urlImg || require("../../assets/images/moon/north-full-moon.png")
+        }
+      />
+      <ThemedText style={tw`font-bold`}>{item.date}</ThemedText>
+      <ThemedText style={tw`my-2`}>Phase: {item.moon_phase}</ThemedText>
+      <ThemedText style={tw`my-2`}>Lever: {item.moonrise}</ThemedText>
+      <ThemedText style={tw`my-2`}>Coucher: {item.moonset}</ThemedText>
+    </View>
+  );
+
+  const renderMoonPhaseCards = () => {
+    const rows = [];
+    for (let i = 0; i < astroSevenData.length; i += 3) {
+      rows.push(
+        <View key={i} style={tw`flex flex-row justify-between mb-4 w-full`}>
+          {astroSevenData.slice(i, i + 3).map((item, index) => (
+            <MoonPhaseCard key={index} item={item} />
+          ))}
+        </View>
+      );
+    }
+    return rows;
+  };
   const getMoonPhaseImage = (
     phase: MoonPhase,
     lat: number
@@ -258,56 +332,69 @@ export default function HomeScreen() {
         autoPlay
         loop
       />
-      <View style={tw`flex-1 justify-center items-center`}>
-        <Button title="ici" onPress={fetchAstronomyData} />
-        <Image
-          style={tw`w-70 h-70 mx-auto`}
-          source={
-            urlImg || require("../../assets/images/moon/north-full-moon.png")
-          }
-        />
-        <ThemedView style={tw`bg-inherit text-white`}>
-          <ThemedText type="subtitle">
-            {cityProps
-              ? cityProps
-              : cityName?.city || cityName?.town || cityName?.village}
-          </ThemedText>
-          <ThemedText type="subtitle">Données de la Lune</ThemedText>
+      <ScrollView>
+        <View style={tw`flex-1 justify-center items-center`}>
+          <Button
+            title="ici"
+            onPress={() => {
+              setResetPosition(true);
+            }}
+          />
+          <Image
+            style={tw`w-70 h-70 mx-auto`}
+            source={
+              urlImg || require("../../assets/images/moon/north-full-moon.png")
+            }
+          />
+          <ThemedView style={tw`bg-inherit text-white`}>
+            <ThemedText type="subtitle">{cityName}</ThemedText>
+            <ThemedText type="subtitle">Données de la Lune</ThemedText>
 
-          {loading ? (
-            <ThemedText>Chargement des données...</ThemedText>
-          ) : (
-            <>
-              <ThemedText>Phase lunaire: {moonData.moonPhase}</ThemedText>
-              <ThemedText>Lever de la lune: {moonData.moonrise}</ThemedText>
-              <ThemedText>Coucher de la lune: {moonData.moonset}</ThemedText>
-            </>
-          )}
-        </ThemedView>
-        <ThemedView style={tw`bg-inherit`}>
-          <ThemedText type="subtitle">Données Astronomiques</ThemedText>
-          {loading ? (
-            <ThemedText>Chargement des données...</ThemedText>
-          ) : (
-            <>
-              <ThemedText>Lever du soleil: {moonData.sunrise}</ThemedText>
-              <ThemedText>Coucher du soleil: {moonData.sunset}</ThemedText>
-              <ThemedText>Lever de la lune: {moonData.moonrise}</ThemedText>
-              <ThemedText>Coucher de la lune: {moonData.moonset}</ThemedText>
-              <ThemedText>Phase lunaire: {moonData.moonPhase}</ThemedText>
-              <ThemedText>
-                Illumination lunaire: {moonData.moonIllumination}%
-              </ThemedText>
-              <ThemedText>
-                La lune est-elle visible ? {moonData.isMoonUp ? "Oui" : "Non"}
-              </ThemedText>
-              <ThemedText>
-                Le soleil est-il visible ? {moonData.isSunUp ? "Oui" : "Non"}
-              </ThemedText>
-            </>
-          )}
-        </ThemedView>
-      </View>
+            {loading ? (
+              <ThemedText>Chargement des données...</ThemedText>
+            ) : (
+              <>
+                <ThemedText>Phase lunaire: {moonData.moonPhase}</ThemedText>
+                <ThemedText>Lever de la lune: {moonData.moonrise}</ThemedText>
+                <ThemedText>Coucher de la lune: {moonData.moonset}</ThemedText>
+              </>
+            )}
+          </ThemedView>
+          <ThemedView style={tw`bg-inherit`}>
+            <ThemedText type="subtitle">Données Astronomiques</ThemedText>
+            {loading ? (
+              <ThemedText>Chargement des données...</ThemedText>
+            ) : (
+              <>
+                <ThemedText>Lever du soleil: {moonData.sunrise}</ThemedText>
+                <ThemedText>Coucher du soleil: {moonData.sunset}</ThemedText>
+                <ThemedText>Lever de la lune: {moonData.moonrise}</ThemedText>
+                <ThemedText>Coucher de la lune: {moonData.moonset}</ThemedText>
+                <ThemedText>Phase lunaire: {moonData.moonPhase}</ThemedText>
+                <ThemedText>
+                  Illumination lunaire: {moonData.moonIllumination}%
+                </ThemedText>
+                <ThemedText>
+                  La lune est-elle visible ? {moonData.isMoonUp ? "Oui" : "Non"}
+                </ThemedText>
+                <ThemedText>
+                  Le soleil est-il visible ? {moonData.isSunUp ? "Oui" : "Non"}
+                </ThemedText>
+              </>
+            )}
+          </ThemedView>
+          <ThemedView style={tw`bg-inherit`}>
+            <ThemedText type="subtitle">
+              Prévisions Astronomiques sur 7 jours
+            </ThemedText>
+            {loading ? (
+              <ActivityIndicator size="large" color="#0000ff" />
+            ) : (
+              renderMoonPhaseCards()
+            )}
+          </ThemedView>
+        </View>
+      </ScrollView>
     </View>
   );
 }

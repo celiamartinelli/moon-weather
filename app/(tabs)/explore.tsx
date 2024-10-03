@@ -23,7 +23,7 @@ export default function TabTwoScreen() {
       `https://nominatim.openstreetmap.org/search?q=${city}&format=json`
     );
     const data = await response.json();
-    console.log("data", JSON.stringify(data, null, 2));
+    // console.log("data", JSON.stringify(data, null, 2));
 
     const formattedResults = data.map((item: any) => ({
       name: item.name,
@@ -44,10 +44,6 @@ export default function TabTwoScreen() {
       `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
     );
     const data = await response.json();
-
-    if (data && data.address && data.address.city) {
-      console.log("Nom de la ville :", data.address.city);
-    }
   };
 
   const handleSearch = () => {
