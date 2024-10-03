@@ -333,67 +333,83 @@ export default function HomeScreen() {
         loop
       />
       <ScrollView>
-        <View style={tw`flex-1 justify-center items-center`}>
-          <Button
-            title="ici"
-            onPress={() => {
-              setResetPosition(true);
-            }}
+        {loading ? (
+          <LottieView
+            style={tw`w-50 h-50 mx-auto justify-center items-center`}
+            source={require("../../assets/images/animation/loader.json")}
+            autoPlay
+            loop
           />
-          <Image
-            style={tw`w-70 h-70 mx-auto`}
-            source={
-              urlImg || require("../../assets/images/moon/north-full-moon.png")
-            }
-          />
-          <ThemedView style={tw`bg-inherit text-white`}>
-            <ThemedText type="subtitle">{cityName}</ThemedText>
-            <ThemedText type="subtitle">Données de la Lune</ThemedText>
+        ) : (
+          <View style={tw`flex-1 justify-center items-center`}>
+            <Button
+              title="ici"
+              onPress={() => {
+                setResetPosition(true);
+              }}
+            />
+            <Image
+              style={tw`w-70 h-70 mx-auto`}
+              source={
+                urlImg ||
+                require("../../assets/images/moon/north-full-moon.png")
+              }
+            />
+            <ThemedView style={tw`bg-inherit text-white`}>
+              <ThemedText type="subtitle">{cityName}</ThemedText>
+              <ThemedText type="subtitle">Données de la Lune</ThemedText>
 
-            {loading ? (
-              <ThemedText>Chargement des données...</ThemedText>
-            ) : (
-              <>
-                <ThemedText>Phase lunaire: {moonData.moonPhase}</ThemedText>
-                <ThemedText>Lever de la lune: {moonData.moonrise}</ThemedText>
-                <ThemedText>Coucher de la lune: {moonData.moonset}</ThemedText>
-              </>
-            )}
-          </ThemedView>
-          <ThemedView style={tw`bg-inherit`}>
-            <ThemedText type="subtitle">Données Astronomiques</ThemedText>
-            {loading ? (
-              <ThemedText>Chargement des données...</ThemedText>
-            ) : (
-              <>
-                <ThemedText>Lever du soleil: {moonData.sunrise}</ThemedText>
-                <ThemedText>Coucher du soleil: {moonData.sunset}</ThemedText>
-                <ThemedText>Lever de la lune: {moonData.moonrise}</ThemedText>
-                <ThemedText>Coucher de la lune: {moonData.moonset}</ThemedText>
-                <ThemedText>Phase lunaire: {moonData.moonPhase}</ThemedText>
-                <ThemedText>
-                  Illumination lunaire: {moonData.moonIllumination}%
-                </ThemedText>
-                <ThemedText>
-                  La lune est-elle visible ? {moonData.isMoonUp ? "Oui" : "Non"}
-                </ThemedText>
-                <ThemedText>
-                  Le soleil est-il visible ? {moonData.isSunUp ? "Oui" : "Non"}
-                </ThemedText>
-              </>
-            )}
-          </ThemedView>
-          <ThemedView style={tw`bg-inherit`}>
-            <ThemedText type="subtitle">
-              Prévisions Astronomiques sur 7 jours
-            </ThemedText>
-            {loading ? (
-              <ActivityIndicator size="large" color="#0000ff" />
-            ) : (
-              renderMoonPhaseCards()
-            )}
-          </ThemedView>
-        </View>
+              {loading ? (
+                <ThemedText>Chargement des données...</ThemedText>
+              ) : (
+                <>
+                  <ThemedText>Phase lunaire: {moonData.moonPhase}</ThemedText>
+                  <ThemedText>Lever de la lune: {moonData.moonrise}</ThemedText>
+                  <ThemedText>
+                    Coucher de la lune: {moonData.moonset}
+                  </ThemedText>
+                </>
+              )}
+            </ThemedView>
+            <ThemedView style={tw`bg-inherit`}>
+              <ThemedText type="subtitle">Données Astronomiques</ThemedText>
+              {loading ? (
+                <ThemedText>Chargement des données...</ThemedText>
+              ) : (
+                <>
+                  <ThemedText>Lever du soleil: {moonData.sunrise}</ThemedText>
+                  <ThemedText>Coucher du soleil: {moonData.sunset}</ThemedText>
+                  <ThemedText>Lever de la lune: {moonData.moonrise}</ThemedText>
+                  <ThemedText>
+                    Coucher de la lune: {moonData.moonset}
+                  </ThemedText>
+                  <ThemedText>Phase lunaire: {moonData.moonPhase}</ThemedText>
+                  <ThemedText>
+                    Illumination lunaire: {moonData.moonIllumination}%
+                  </ThemedText>
+                  <ThemedText>
+                    La lune est-elle visible ?{" "}
+                    {moonData.isMoonUp ? "Oui" : "Non"}
+                  </ThemedText>
+                  <ThemedText>
+                    Le soleil est-il visible ?{" "}
+                    {moonData.isSunUp ? "Oui" : "Non"}
+                  </ThemedText>
+                </>
+              )}
+            </ThemedView>
+            <ThemedView style={tw`bg-inherit`}>
+              <ThemedText type="subtitle">
+                Prévisions Astronomiques sur 7 jours
+              </ThemedText>
+              {loading ? (
+                <ActivityIndicator size="large" color="#0000ff" />
+              ) : (
+                renderMoonPhaseCards()
+              )}
+            </ThemedView>
+          </View>
+        )}
       </ScrollView>
     </View>
   );
