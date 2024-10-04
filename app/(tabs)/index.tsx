@@ -19,8 +19,9 @@ import { ThemedView } from "@/components/ThemedView";
 import tw from "../../tw-rn";
 import LottieView from "lottie-react-native";
 import Entypo from "@expo/vector-icons/Entypo";
-
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRoute } from "@react-navigation/native";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 type MoonPhase =
   | "New Moon"
@@ -154,6 +155,7 @@ export default function HomeScreen() {
         is_moon_up,
         is_sun_up,
       } = await data.astronomy.astro;
+      // console.log("data", data);
 
       const { name, region, country, localtime, lat } = data.location;
 
@@ -170,11 +172,16 @@ export default function HomeScreen() {
       });
 
       setLocation({ name, region, country, localtime, lat });
-      setLoading(false);
+
+      const moonImage = getMoonPhaseImage(moon_phase as MoonPhase, lat);
+      setUrlImg(moonImage);
+      // getMoonPhaseImage(moon_phase as MoonPhase, lat);
+      setTimeout(() => setLoading(false), 2000);
+
       setResetPosition(false);
     } catch (error) {
       console.error("Erreur lors de la requête API", error);
-      setLoading(false);
+      setTimeout(() => setLoading(false), 2000);
     }
   };
 
@@ -200,7 +207,15 @@ export default function HomeScreen() {
           moonset: day.astro.moonset,
           sunrise: day.astro.sunrise,
           sunset: day.astro.sunset,
+          moon_image: getMoonPhaseImage(
+            day.astro.moon_phase,
+            data.location.lat
+          ),
         }));
+        // Vérifiez si moon_image est correctement défini pour chaque jour
+        astroData.forEach((day, index) => {
+          console.log(`Day ${index + 1} moon_image:`, day.moon_image);
+        });
         // Mettez à jour l'état avec les données astro
         setAstroSevenData(astroData);
       } else {
@@ -230,30 +245,35 @@ export default function HomeScreen() {
         await fetchDataCity();
       }
       fetchAstronomyData();
-      getMoonPhaseImage(moonData.moonPhase, location.lat);
-      setLoading(false);
+      setTimeout(() => setLoading(false), 2000);
       fecthAstronomyDataOnSevenDays();
     })();
   }, [resetPosition, cityName]);
 
-  // useEffect(() => {
-  //   fecthAstronomyDataOnSevenDays();
-  // }, [cityName, resetPosition]);
-
   const MoonPhaseCard = ({ item }: { item: any }) => (
     <View
-      style={tw`border-2 border-white rounded-lg p-4 m-2 flex-1 items-center shadow-md`}
+      style={tw`border-2 border-white rounded-lg p-2 m-1 flex items-center shadow-md`}
     >
-      <Image
+      {/* <Image
         style={tw`w-20 h-20 mx-auto`}
         source={
           urlImg || require("../../assets/images/moon/north-full-moon.png")
         }
-      />
-      <ThemedText style={tw`font-bold`}>{item.date}</ThemedText>
+      /> */}
+      {item.moon_image && (
+        <Image style={tw`w-20 h-20 mx-auto`} source={item.moon_image} />
+      )}
+      <ThemedText style={tw`font-bold`}>
+        {" "}
+        {new Date(item.date).toLocaleDateString("en-EN", {
+          day: "numeric",
+          month: "numeric",
+          year: "numeric",
+        })}
+      </ThemedText>
       <ThemedText style={tw`my-2`}>Phase: {item.moon_phase}</ThemedText>
-      <ThemedText style={tw`my-2`}>Lever: {item.moonrise}</ThemedText>
-      <ThemedText style={tw`my-2`}>Coucher: {item.moonset}</ThemedText>
+      <ThemedText style={tw`my-2`}>Lever: {item.moonset}</ThemedText>
+      <ThemedText style={tw`my-2`}>Coucher: {item.moonrise}</ThemedText>
     </View>
   );
 
@@ -261,7 +281,7 @@ export default function HomeScreen() {
     const rows = [];
     for (let i = 0; i < astroSevenData.length; i += 3) {
       rows.push(
-        <View key={i} style={tw`flex flex-row justify-between mb-4 w-full`}>
+        <View key={i} style={tw`flex flex-wrap flex-row justify-center mb-4 `}>
           {astroSevenData.slice(i, i + 3).map((item, index) => (
             <MoonPhaseCard key={index} item={item} />
           ))}
@@ -274,7 +294,7 @@ export default function HomeScreen() {
     phase: MoonPhase,
     lat: number
   ): ImageSourcePropType | null => {
-    const hemisphere = lat > 0 ? "north" : "south";
+    const hemisphere = lat < 0 ? "south" : "north";
     let image: ImageSourcePropType | undefined;
 
     switch (phase) {
@@ -287,8 +307,8 @@ export default function HomeScreen() {
       case "Waxing Crescent":
         image =
           hemisphere === "north"
-            ? require("../../assets/images/moon/north-first-crescent.png")
-            : require("../../assets/images/moon/south-first-crescent.png");
+            ? require("../../assets/images/moon/north-waxing-crescent.png")
+            : require("../../assets/images/moon/south-waxing-crescent.png");
         break;
       case "First Quarter":
         image =
@@ -330,7 +350,8 @@ export default function HomeScreen() {
         image = undefined;
     }
 
-    setUrlImg(image);
+    // setUrlImg(image);
+    return image || null;
   };
 
   return (
@@ -354,7 +375,7 @@ export default function HomeScreen() {
           <View style={tw`flex-1 justify-center items-center`}>
             <View style={tw`flex-row justify-end w-full`}>
               <TouchableOpacity
-                style={tw`w-10 h-10 mr-4`}
+                style={tw`w-20 h-20 mr-4 flex justify-center items-center`}
                 onPress={() => {
                   setResetPosition(true);
                 }}
@@ -367,6 +388,7 @@ export default function HomeScreen() {
                 />
               </TouchableOpacity>
             </View>
+
             <Image
               style={tw`w-70 h-70 mx-auto`}
               source={
@@ -375,37 +397,33 @@ export default function HomeScreen() {
               }
             />
             <ThemedView style={tw`bg-inherit text-white`}>
-              <ThemedText type="subtitle">{cityName}</ThemedText>
-              <ThemedText style={tw`font-bold`}>
-                Date locale: {location.localtime}
+              <ThemedText type="subtitle">
+                {" "}
+                <Entypo name="location-pin" size={24} color="white" />
+                {cityName}
               </ThemedText>
-              <ThemedText type="subtitle">Données de la Lune</ThemedText>
+              <ThemedText style={tw`font-bold`}>
+                Date locale:{" "}
+                {new Date(location.localtime).toLocaleDateString("en-EN", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              </ThemedText>
+              <ThemedText type="subtitle">
+                <Ionicons name="moon" size={24} color="white" />
+                Moon
+              </ThemedText>
 
               {loading ? (
                 <ThemedText>Chargement des données...</ThemedText>
               ) : (
                 <>
                   <ThemedText>Phase lunaire: {moonData.moonPhase}</ThemedText>
-                  <ThemedText>Lever de la lune: {moonData.moonrise}</ThemedText>
+                  <ThemedText>Lever de la lune: {moonData.moonset}</ThemedText>
                   <ThemedText>
-                    Coucher de la lune: {moonData.moonset}
+                    Coucher de la lune: {moonData.moonrise}
                   </ThemedText>
-                </>
-              )}
-            </ThemedView>
-            <ThemedView style={tw`bg-inherit`}>
-              <ThemedText type="subtitle">Données Astronomiques</ThemedText>
-              {loading ? (
-                <ThemedText>Chargement des données...</ThemedText>
-              ) : (
-                <>
-                  <ThemedText>Lever du soleil: {moonData.sunrise}</ThemedText>
-                  <ThemedText>Coucher du soleil: {moonData.sunset}</ThemedText>
-                  <ThemedText>Lever de la lune: {moonData.moonrise}</ThemedText>
-                  <ThemedText>
-                    Coucher de la lune: {moonData.moonset}
-                  </ThemedText>
-                  <ThemedText>Phase lunaire: {moonData.moonPhase}</ThemedText>
                   <ThemedText>
                     Illumination lunaire: {moonData.moonIllumination}%
                   </ThemedText>
@@ -417,6 +435,21 @@ export default function HomeScreen() {
                     Le soleil est-il visible ?{" "}
                     {moonData.isSunUp ? "Oui" : "Non"}
                   </ThemedText>
+                </>
+              )}
+            </ThemedView>
+            <ThemedView style={tw`bg-inherit`}>
+              <ThemedText type="subtitle">
+                {" "}
+                <MaterialIcons name="sunny" size={24} color="white" />
+                Sun
+              </ThemedText>
+              {loading ? (
+                <ThemedText>Chargement des données...</ThemedText>
+              ) : (
+                <>
+                  <ThemedText>Lever du soleil: {moonData.sunrise}</ThemedText>
+                  <ThemedText>Coucher du soleil: {moonData.sunset}</ThemedText>
                 </>
               )}
             </ThemedView>
