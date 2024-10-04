@@ -1,50 +1,81 @@
-# Welcome to your Expo app 👋
+# 🌙 Moon Weather
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Moon Weather** est une application mobile innovante qui permet aux utilisateurs de consulter des informations météorologiques spécifiques à la lune. Contrairement aux applications météo traditionnelles, **Moon Weather** utilise une API météo pour fournir des données scientifiques précises sur l'état actuel et futur de la lune.
 
-## Get started
+L'objectif de cette application est de fournir une interface utilisateur simple et accessible tout en offrant des informations fiables et détaillées sur la météo lunaire.
 
-1. Install dependencies
+## 📱 Fonctionnalités
+
+- Affichage des prévisions météorologiques spécifiques à la lune.
+- Détails sur l'état actuel de la lune (phase, visibilité, conditions atmosphériques, etc.).
+- Interface utilisateur intuitive et responsive, développée avec **React Native** et stylisée avec **TailwindCSS**.
+- Utilisation de **TypeScript** pour un code plus robuste et sécurisé.
+- Consommation d'une **Weather API** pour récupérer les données en temps réel.
+
+## 🛠️ Technologies
+
+- **React Native** : Framework pour le développement d'applications mobiles multi-plateformes.
+- **TailwindCSS** : Utilisé pour le design responsive et les styles avec un système de classes utilitaires.
+- **TypeScript** : Superset de JavaScript apportant des types statiques et améliorant la qualité du code.
+- **Weather API** : Source des données météorologiques lunaires.
+
+## ⚙️ Installation et utilisation
+
+1. Clonez ce dépôt sur votre machine locale :
+
+   ```bash
+   git clone https://github.com/votre-compte/moon_weather.git
+   cd moon_weather
+   ```
+
+   Installez les dépendances du projet avec npm ou yarn :
 
    ```bash
    npm install
    ```
 
-2. Start the app
+   ou
 
    ```bash
-    npx expo start
+   yarn install
    ```
 
-In the output, you'll find options to open the app in a
+   Créez un fichier [`.env`](command:_github.copilot.openRelativePath?%5B%7B%22scheme%22%3A%22file%22%2C%22authority%22%3A%22%22%2C%22path%22%3A%22%2FUsers%2Fceliamartinelli%2FDocuments%2FFORMATION%2FDEV%2FO_Clock%2FPROJET_PERSO%2FGitHub%2Fmoon-weather%2F.env%22%2C%22query%22%3A%22%22%2C%22fragment%22%3A%22%22%7D%2C%224490ccf0-f419-469a-a1e4-0e2cd382d1b4%22%5D "/Users/celiamartinelli/Documents/FORMATION/DEV/O_Clock/PROJET_PERSO/GitHub/moon-weather/.env") à la racine du projet et ajoutez votre clé API pour la Weather API :
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+   ```bash
+   API_KEY=your_api_key_here
+   ```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+   Exécutez l'application sur un émulateur ou un appareil physique :
 
-## Get a fresh project
+   ```bash
+   npm run android # Pour Android
+   npm run ios # Pour iOS
+   ```
 
-When you're ready, run:
+   ## 🧑‍💻 Contribution
 
-```bash
-npm run reset-project
-```
+   Les contributions sont les bienvenues ! Si vous souhaitez proposer une amélioration ou corriger un bug, suivez ces étapes :
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+   1. Forkez le dépôt.
+   2. Créez une branche pour votre fonctionnalité ou correction de bug :
+      ```bash
+      git checkout -b feature/nom-fonctionnalité
+      ```
+   3. Faites vos modifications et committez-les :
+      ```bash
+      git commit -m 'Ajout d'une nouvelle fonctionnalité'
+      ```
+   4. Poussez vos modifications :
+      ```bash
+      git push origin feature/nom-fonctionnalité
+      ```
+   5. Créez une Pull Request.
 
-## Learn more
+   ## 📄 License
 
-To learn more about developing your project with Expo, look at the following resources:
+   Ce projet est sous licence MIT. Voir le fichier LICENSE pour plus de détails.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+   ## 📫 Contact
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+   Pour toute question ou suggestion, n'hésitez pas à me contacter à votre-email@example.com.
