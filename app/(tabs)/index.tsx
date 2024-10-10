@@ -25,6 +25,7 @@ import { useRoute } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useTranslation } from "react-i18next";
 import { parse, format } from "date-fns";
+import Feather from "@expo/vector-icons/Feather";
 
 type MoonPhase =
   | "New Moon"
@@ -131,12 +132,7 @@ export default function HomeScreen() {
     }
     const apiKey = "0d024f07b83f436f8f371944240910";
     const date = new Date().toISOString().split("T")[0];
-    // console.log("date", date);
-
-    // console.log("cityName", cityName);
-
     let city = cityName;
-    // console.log("city est la ", city);
 
     const url = `http://api.weatherapi.com/v1/astronomy.json?key=${apiKey}&q=${city}&dt=${date}`;
 
@@ -161,7 +157,6 @@ export default function HomeScreen() {
         is_moon_up,
         is_sun_up,
       } = await data.astronomy.astro;
-      // console.log("data", data);
 
       const { name, region, country, localtime, lat } = data.location;
 
@@ -191,6 +186,23 @@ export default function HomeScreen() {
     }
   };
 
+  const getMoonPhaseIcon = (moonPhase: MoonPhase) => {
+    switch (moonPhase) {
+      case "Waxing Crescent":
+      case "First Quarter":
+      case "Waxing Gibbous":
+        return <Feather name="arrow-up-right" size={24} color="white" />;
+
+      case "Waning Gibbous":
+      case "Last Quarter":
+      case "Waning Crescent":
+        return <Feather name="arrow-down-left" size={24} color="white" />;
+
+      default:
+        return null;
+    }
+  };
+
   const fecthAstronomyDataOnSevenDays = async () => {
     if (!latitude || !longitude) {
       console.error("Latitude ou longitude non définies.");
@@ -198,8 +210,8 @@ export default function HomeScreen() {
     }
     const apiKey = "0d024f07b83f436f8f371944240910";
     let city = cityName;
-    // console.log("city est la ", city);
-    const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&days=7&aqi=no&alerts=no`;
+
+    const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&days=3&aqi=no&alerts=no`;
 
     try {
       const response = await fetch(url);
@@ -217,6 +229,7 @@ export default function HomeScreen() {
           moon_phase: day.astro.moon_phase,
           moonrise: day.astro.moonrise,
           moonset: day.astro.moonset,
+          illumination: day.astro.moon_illumination,
           sunrise: day.astro.sunrise,
           sunset: day.astro.sunset,
           moon_image: getMoonPhaseImage(
@@ -224,13 +237,8 @@ export default function HomeScreen() {
             data.location.lat
           ),
         }));
-        // Vérifiez si moon_image est correctement défini pour chaque jour
-        // astroData.forEach((day, index) => {
-        //   console.log(`Day ${index + 1} moon_image:`, day.moon_image);
-        // });
-        // Mettez à jour l'état avec les données astro
         setAstroSevenData(astroData);
-        console.log("astroData", astroData);
+        // console.log("astroData", data.forecast.forecastday);
       } else {
         console.error(
           "La réponse de l'API ne contient pas les données de prévision attendues."
@@ -265,7 +273,7 @@ export default function HomeScreen() {
 
   const MoonPhaseCard = ({ item }: { item: any }) => (
     <View
-      style={tw`border-2 border-white rounded-lg p-2 m-1 flex items-center shadow-md`}
+      style={tw`bg-white bg-opacity-15 rounded-lg p-2 m-1 flex items-center shadow-md w-80`}
     >
       {item.moon_image && (
         <Image style={tw`w-20 h-20 mx-auto`} source={item.moon_image} />
@@ -278,18 +286,35 @@ export default function HomeScreen() {
           year: "numeric",
         })}
       </ThemedText>
-      <ThemedText style={tw`my-2`}>
-        {t("index.moonPhase")}: {t(`index.phases.${moonData.moonPhase}`)}
-      </ThemedText>
-      <ThemedText style={tw`my-2`}>
-        {t(`index.moonrise`)}:{" "}
-        {isFrench ? formatTimeToFrench(moonData.moonset) : moonData.moonset}
-      </ThemedText>
-      <ThemedText style={tw`my-2`}>
-        {" "}
-        {t(`index.moonset`)}:{" "}
-        {isFrench ? formatTimeToFrench(moonData.moonrise) : moonData.moonrise}
-      </ThemedText>
+      {/* <ThemedText style={tw`my-2`}>{t("index.moonPhase")}:</ThemedText> */}
+      <View style={tw`flex-row justify-center items-center my-3`}>
+        <ThemedText>{t(`index.phases.${item.moon_phase}`)} </ThemedText>
+        <ThemedText>{getMoonPhaseIcon(moonData.moonPhase)}</ThemedText>
+      </View>
+
+      <View
+        style={tw`flex-row bg-white bg-opacity-10 rounded-lg mb-5 w-70 justify-center items-center shadow-md`}
+      >
+        <View style={tw`flex-col justify-center items-center p-8 `}>
+          <Image
+            source={require("../../assets/icone/icons8-moonrise-48.png")}
+            style={tw`w-10 h-10`}
+          />
+          <ThemedText>
+            {isFrench ? formatTimeToFrench(moonData.moonrise) : item.moonrise}
+          </ThemedText>
+        </View>
+        <View style={tw`flex-col justify-center items-center p-8`}>
+          <Image
+            source={require("../../assets/icone/icons8-moonset-48.png")}
+            style={tw`w-10 h-10`}
+          />
+          <ThemedText>
+            {isFrench ? formatTimeToFrench(moonData.moonset) : item.moonset}
+          </ThemedText>
+        </View>
+      </View>
+      <ThemedText> Illumination lunaire: {item.illumination}%</ThemedText>
     </View>
   );
 
@@ -405,26 +430,18 @@ export default function HomeScreen() {
               style={tw`bg-inherit w-full text-white flex-row justify-between items-center mx-4 pl-4`}
             >
               <View style={tw`flex-row items-center`}>
-                <ThemedText>{isFrench ? "FR" : "EN"} </ThemedText>
+                <ThemedText style={tw`text-xs`}>
+                  {isFrench ? "FR" : "EN"}{" "}
+                </ThemedText>
                 <Switch value={isFrench} onValueChange={toggleLanguage} />
               </View>
-              <View>
-                <ThemedText type="subtitle">
-                  {" "}
+              <View style={tw`flex-col justify-center items-center`}>
+                <View style={tw`flex-row`}>
                   <Entypo name="location-pin" size={24} color="white" />
-                  {cityName}
-                </ThemedText>
-                <ThemedText style={tw`font-bold`}>
-                  {new Date(location.localtime).toLocaleDateString(
-                    i18n.language,
-                    {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    }
-                  )}
-                </ThemedText>
+                  <ThemedText type="subtitle"> {cityName}</ThemedText>
+                </View>
               </View>
+
               <View>
                 <TouchableOpacity
                   style={tw`w-20 h-20  flex justify-center items-center`}
@@ -441,6 +458,19 @@ export default function HomeScreen() {
                 </TouchableOpacity>
               </View>
             </ThemedView>
+            <View style={tw`w-full justify-center items-center mb-2`}>
+              <ThemedText style={tw`font-bold`}>
+                {new Date(location.localtime).toLocaleDateString(
+                  i18n.language,
+                  {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  }
+                )}
+              </ThemedText>
+            </View>
 
             <Image
               style={tw`w-70 h-70 mx-auto`}
@@ -463,28 +493,25 @@ export default function HomeScreen() {
                   <View
                     style={tw`m-2 flex-row justify-center items-center mb-5`}
                   >
-                    <ThemedText style={tw``}>
-                      {t("index.moonPhase")}:
-                    </ThemedText>
+                    <ThemedText style={tw``}></ThemedText>
                     <ThemedText style={tw``}>
                       {" "}
-                      {t(`index.phases.${moonData.moonPhase}`)}
+                      {t(`index.phases.${moonData.moonPhase}`)}{" "}
+                      {getMoonPhaseIcon(moonData.moonPhase)}
                     </ThemedText>
                   </View>
                   <View
-                    style={tw`flex-row border border-white  rounded-lg  mb-5`}
+                    style={tw`flex-row justify-center mb-5 w-70 bg-white bg-opacity-15 rounded-lg shadow-xl`}
                   >
-                    <View
-                      style={tw`flex-col justify-center items-center p-8 border-r border-white`}
-                    >
+                    <View style={tw`flex-col justify-center items-center p-8`}>
                       <Image
                         source={require("../../assets/icone/icons8-moonrise-48.png")}
                         style={tw`w-10 h-10`}
                       />
                       <ThemedText>
                         {isFrench
-                          ? formatTimeToFrench(moonData.moonset)
-                          : moonData.moonset}
+                          ? formatTimeToFrench(moonData.moonrise)
+                          : moonData.moonrise}
                       </ThemedText>
                     </View>
                     <View style={tw`flex-col justify-center items-center p-8`}>
@@ -494,8 +521,8 @@ export default function HomeScreen() {
                       />
                       <ThemedText>
                         {isFrench
-                          ? formatTimeToFrench(moonData.moonrise)
-                          : moonData.moonrise}
+                          ? formatTimeToFrench(moonData.moonset)
+                          : moonData.moonset}
                       </ThemedText>
                     </View>
                   </View>
@@ -535,10 +562,10 @@ export default function HomeScreen() {
               {loading ? (
                 <ThemedText>Chargement des données...</ThemedText>
               ) : (
-                <View style={tw` flex-row border border-white rounded-lg`}>
-                  <View
-                    style={tw`flex-col justify-center items-center p-8 border-r border-white`}
-                  >
+                <View
+                  style={tw` flex-row justify-center items-center mb-5 w-70 bg-white bg-opacity-15 rounded-lg`}
+                >
+                  <View style={tw`flex-col justify-center items-center p-8 `}>
                     <Image
                       source={require("../../assets/icone/icons8-climate-64.png")}
                       style={tw`w-10 h-10`}
@@ -564,9 +591,11 @@ export default function HomeScreen() {
               )}
             </ThemedView>
             <ThemedView style={tw`bg-inherit justify-center items-center`}>
-              <ThemedText type="subtitle">
-                Prévisions sur les prochains jours
-              </ThemedText>
+              <View style={tw`mb-5`}>
+                <ThemedText type="subtitle">
+                  Prévisions sur les prochains jours
+                </ThemedText>
+              </View>
               {loading ? (
                 <ActivityIndicator size="large" color="#0000ff" />
               ) : (
