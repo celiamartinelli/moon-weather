@@ -74,9 +74,8 @@ export default function TabTwoScreen() {
     { name: "Sydney", latitude: -33.8688, longitude: 151.2093 },
   ];
 
-  const handleCityPress = (latitude, longitude) => {
-    handlePress(latitude, longitude);
-    navigation.navigate("index", { latitude, longitude });
+  const handleCityPress = (cityName: string) => {
+    handlePress(cityName);
   };
 
   return (
@@ -123,9 +122,9 @@ export default function TabTwoScreen() {
           {results.length === 0
             ? knownCities.map((city) => (
                 <TouchableOpacity
-                  key={`${city.latitude}-${city.longitude}`}
+                  key={city.name}
                   style={tw`p-2 border-b border-gray-200`}
-                  onPress={() => handleCityPress(city.latitude, city.longitude)}
+                  onPress={() => handleCityPress(city.name)}
                 >
                   <ThemedText>{city.name}</ThemedText>
                 </TouchableOpacity>
