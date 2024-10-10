@@ -98,6 +98,7 @@ export default function HomeScreen() {
   const [urlImg, setUrlImg] = useState<string | null>(null);
   const [resetPosition, setResetPosition] = useState(false);
   const [astroSevenData, setAstroSevenData] = useState<any[]>([]);
+  const [error, setError] = useState(null);
 
   const route = useRoute();
   const { cityProps } = route.params || {};
@@ -218,7 +219,8 @@ export default function HomeScreen() {
       const data = await response.json();
 
       if (data.error) {
-        console.error("Erreur de l'API:", data.error.message);
+        // console.error("Erreur de l'API:", data.error.message);
+
         return;
       }
 
@@ -314,7 +316,10 @@ export default function HomeScreen() {
           </ThemedText>
         </View>
       </View>
-      <ThemedText> Illumination lunaire: {item.illumination}%</ThemedText>
+      <ThemedText>
+        {" "}
+        {t(`index.moonIllumination`)} {item.illumination}%
+      </ThemedText>
     </View>
   );
 
@@ -528,17 +533,15 @@ export default function HomeScreen() {
                   </View>
                   <View style={tw``}>
                     <ThemedText>
-                      Illumination lunaire: {moonData.moonIllumination}%
+                      {t(`index.moonIllumination`)} {moonData.moonIllumination}%
                     </ThemedText>
                   </View>
                   <View style={tw`flex-col my-5`}>
                     <ThemedText>
-                      La lune est-elle visible ?{" "}
-                      {moonData.isMoonUp ? "Oui" : "Non"}
+                      {t(`index.isMoonUp`)} {moonData.isMoonUp ? "Oui" : "Non"}
                     </ThemedText>
                     <ThemedText>
-                      Le soleil est-il visible ?{" "}
-                      {moonData.isSunUp ? "Oui" : "Non"}
+                      {t(`index.isSunUp`)} {moonData.isSunUp ? "Oui" : "Non"}
                     </ThemedText>
                   </View>
                 </>
@@ -560,7 +563,7 @@ export default function HomeScreen() {
                 </ThemedText>
               </View>
               {loading ? (
-                <ThemedText>Chargement des données...</ThemedText>
+                <ThemedText>{t(`index.dataLoading`)}</ThemedText>
               ) : (
                 <View
                   style={tw` flex-row justify-center items-center mb-5 w-70 bg-white bg-opacity-15 rounded-lg`}
@@ -592,9 +595,7 @@ export default function HomeScreen() {
             </ThemedView>
             <ThemedView style={tw`bg-inherit justify-center items-center`}>
               <View style={tw`mb-5`}>
-                <ThemedText type="subtitle">
-                  Prévisions sur les prochains jours
-                </ThemedText>
+                <ThemedText type="subtitle">{t(`index.nextDays`)}</ThemedText>
               </View>
               {loading ? (
                 <ActivityIndicator size="large" color="#0000ff" />

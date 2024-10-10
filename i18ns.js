@@ -11,8 +11,11 @@ const resources = {
         moonPhase: "Moon Phase",
         moonrise: "Moonrise",
         moonset: "Moonset",
-        moonIllumination: "Moon Illumination",
+        moonIllumination: "Moon Illumination:",
         isMoonUp: "Is the moon up?",
+        isSunUp: "Is the sun up?",
+        dataLoading: "Loading data...",
+        nextDays: "Next days forecast",
         phases: {
           "New Moon": "New Moon",
           "Waxing Crescent": "Waxing Crescent",
@@ -24,6 +27,10 @@ const resources = {
           "Waning Crescent": "Waning Crescent",
         },
       },
+      explore: {
+        input: "Enter a city name",
+        search: "Search",
+      },
     },
   },
   fr: {
@@ -32,8 +39,11 @@ const resources = {
         moonPhase: "Phase de la lune",
         moonrise: "Lever de la lune",
         moonset: "Coucher de la lune",
-        moonIllumination: "Illumination lunaire",
+        moonIllumination: "Illumination lunaire :",
         isMoonUp: "La lune est-elle visible ?",
+        isSunUp: "Le soleil est-il visible ?",
+        dataLoading: "Chargement des données...",
+        nextDays: "Prévisions sur les prochains jours",
         phases: {
           "New Moon": "Nouvelle Lune",
           "Waxing Crescent": "Premier Croissant",
@@ -44,6 +54,10 @@ const resources = {
           "Last Quarter": "Dernier Quartier",
           "Waning Crescent": "Dernier Croissant",
         },
+      },
+      explore: {
+        input: "Entrez un nom de ville",
+        search: "Rechercher",
       },
     },
   },

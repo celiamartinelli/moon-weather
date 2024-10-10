@@ -12,12 +12,14 @@ import LottieView from "lottie-react-native";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { useTranslation } from "react-i18next";
 import tw from "@/tw-rn";
 
 export default function TabTwoScreen() {
   const navigation = useNavigation();
   const [cityName, setCityName] = useState<string | null>(null);
   const [results, setResults] = useState<any[]>([]);
+  const { t } = useTranslation();
 
   const fetchCoordinates = async (city: string) => {
     const response = await fetch(
@@ -45,6 +47,7 @@ export default function TabTwoScreen() {
       `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
     );
     const data = await response.json();
+    // console.log("data", JSON.stringify(data, null, 2));
   };
 
   const handleSearch = () => {
@@ -59,6 +62,21 @@ export default function TabTwoScreen() {
     navigation.navigate("index", {
       cityProps: cityName,
     });
+    setCityName(null);
+    results.length = 0;
+  };
+
+  const knownCities = [
+    { name: "Paris", latitude: 48.8566, longitude: 2.3522 },
+    { name: "New York", latitude: 40.7128, longitude: -74.006 },
+    { name: "Tokyo", latitude: 35.6895, longitude: 139.6917 },
+    { name: "London", latitude: 51.5074, longitude: -0.1278 },
+    { name: "Sydney", latitude: -33.8688, longitude: 151.2093 },
+  ];
+
+  const handleCityPress = (latitude, longitude) => {
+    handlePress(latitude, longitude);
+    navigation.navigate("index", { latitude, longitude });
   };
 
   return (
@@ -77,7 +95,8 @@ export default function TabTwoScreen() {
         <View style={tw`flex-row mb-4`}>
           <TextInput
             style={tw`flex-1 border border-gray-300 rounded-lg p-2 mr-2 text-white`}
-            placeholder="Entrez le nom d'une ville"
+            placeholder={t(`explore.input`)}
+            placeholderTextColor="white"
             value={cityName || ""}
             onChangeText={setCityName}
           />
@@ -85,10 +104,10 @@ export default function TabTwoScreen() {
             style={tw`bg-blue-500 p-2 rounded-lg`}
             onPress={handleSearch}
           >
-            <Text style={tw`text-white`}>Rechercher</Text>
+            <Text style={tw`text-white`}>{t(`explore.search`)}</Text>
           </TouchableOpacity>
         </View>
-        <ScrollView>
+        {/* <ScrollView>
           {results.map((item) => (
             <TouchableOpacity
               key={`${item.latitude}-${item.longitude}`}
@@ -99,6 +118,30 @@ export default function TabTwoScreen() {
               <ThemedText style={tw`text-xs`}>{item.displayName}</ThemedText>
             </TouchableOpacity>
           ))}
+        </ScrollView> */}
+        <ScrollView>
+          {results.length === 0
+            ? knownCities.map((city) => (
+                <TouchableOpacity
+                  key={`${city.latitude}-${city.longitude}`}
+                  style={tw`p-2 border-b border-gray-200`}
+                  onPress={() => handleCityPress(city.latitude, city.longitude)}
+                >
+                  <ThemedText>{city.name}</ThemedText>
+                </TouchableOpacity>
+              ))
+            : results.map((item) => (
+                <TouchableOpacity
+                  key={`${item.latitude}-${item.longitude}`}
+                  style={tw`p-2 border-b border-gray-200`}
+                  onPress={() => handlePress(item.latitude, item.longitude)}
+                >
+                  <ThemedText>{item.name}</ThemedText>
+                  <ThemedText style={tw`text-xs`}>
+                    {item.displayName}
+                  </ThemedText>
+                </TouchableOpacity>
+              ))}
         </ScrollView>
       </ThemedView>
     </ParallaxScrollView>
