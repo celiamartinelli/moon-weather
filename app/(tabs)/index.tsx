@@ -611,10 +611,12 @@ export default function HomeScreen() {
                   </View>
                   <View style={tw`flex-col my-5`}>
                     <ThemedText>
-                      {t(`index.isMoonUp`)} {moonData.isMoonUp ? "Oui" : "Non"}
+                      {t("index.isMoonUp")}{" "}
+                      {moonData.isMoonUp ? t("index.yes") : t("index.no")}
                     </ThemedText>
                     <ThemedText>
-                      {t(`index.isSunUp`)} {moonData.isSunUp ? "Oui" : "Non"}
+                      {t("index.isSunUp")}{" "}
+                      {moonData.isSunUp ? t("index.yes") : t("index.no")}
                     </ThemedText>
                   </View>
                 </>

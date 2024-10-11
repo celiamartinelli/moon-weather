@@ -71,11 +71,96 @@ export default function TabTwoScreen() {
   };
 
   const knownCities = [
-    { name: "Paris", latitude: 48.8566, longitude: 2.3522 },
-    { name: "New York", latitude: 40.7128, longitude: -74.006 },
-    { name: "Tokyo", latitude: 35.6895, longitude: 139.6917 },
-    { name: "London", latitude: 51.5074, longitude: -0.1278 },
-    { name: "Sydney", latitude: -33.8688, longitude: 151.2093 },
+    {
+      name: "New York",
+      latitude: 40.7128,
+      longitude: -74.006,
+      displayName: "New York, New York, United States",
+    },
+    {
+      name: "Paris",
+      latitude: 48.8566,
+      longitude: 2.3522,
+      displayName: "Paris, Île-de-France, France",
+    },
+    {
+      name: "Tokyo",
+      latitude: 35.6762,
+      longitude: 139.6503,
+      displayName: "Tokyo, Kanto, Japan",
+    },
+    {
+      name: "London",
+      latitude: 51.5074,
+      longitude: -0.1278,
+      displayName: "London, England, United Kingdom",
+    },
+    {
+      name: "Moscow",
+      latitude: 55.7558,
+      longitude: 37.6173,
+      displayName: "Moscow, Moscow, Russia",
+    },
+    {
+      name: "Mexico City",
+      latitude: 19.4326,
+      longitude: -99.1332,
+      displayName: "Mexico City, Mexico City, Mexico",
+    },
+    {
+      name: "Beijing",
+      latitude: 39.9042,
+      longitude: 116.4074,
+      displayName: "Beijing, Beijing, China",
+    },
+    {
+      name: "Berlin",
+      latitude: 52.52,
+      longitude: 13.405,
+      displayName: "Berlin, Berlin, Germany",
+    },
+    {
+      name: "Sydney",
+      latitude: -33.8688,
+      longitude: 151.2093,
+      displayName: "Sydney, New South Wales, Australia",
+    },
+    {
+      name: "São Paulo",
+      latitude: -23.5505,
+      longitude: -46.6333,
+      displayName: "São Paulo, São Paulo, Brazil",
+    },
+    {
+      name: "Johannesburg",
+      latitude: -26.2041,
+      longitude: 28.0473,
+      displayName: "Johannesburg, Gauteng, South Africa",
+    },
+    {
+      name: "Buenos Aires",
+      latitude: -34.6037,
+      longitude: -58.3816,
+      displayName: "Buenos Aires, Buenos Aires, Argentina",
+    },
+    {
+      name: "Lima",
+      latitude: -12.0464,
+      longitude: -77.0428,
+      displayName: "Lima, Lima Province, Peru",
+    },
+    {
+      name: "Jakarta",
+      latitude: -6.2088,
+      longitude: 106.8456,
+      displayName: "Jakarta, Jakarta Special Capital Region, Indonesia",
+    },
+    {
+      name: "Auckland",
+      latitude: -36.8485,
+      longitude: 174.7633,
+      displayName: "Auckland, Auckland, New Zealand",
+    },
   ];
 
   return (
@@ -106,18 +191,7 @@ export default function TabTwoScreen() {
             <Text style={tw`text-white`}>{t(`explore.search`)}</Text>
           </TouchableOpacity>
         </View>
-        {/* <ScrollView>
-          {results.map((item) => (
-            <TouchableOpacity
-              key={`${item.latitude}-${item.longitude}`}
-              style={tw`p-2 border-b border-gray-200`}
-              onPress={() => handlePress(item.latitude, item.longitude)}
-            >
-              <ThemedText>{item.name}</ThemedText>
-              <ThemedText style={tw`text-xs`}>{item.displayName}</ThemedText>
-            </TouchableOpacity>
-          ))}
-        </ScrollView> */}
+
         <ScrollView>
           {results.length === 0 ? (
             <View
@@ -126,10 +200,17 @@ export default function TabTwoScreen() {
               {knownCities.map((city) => (
                 <TouchableOpacity
                   key={`${city.latitude}-${city.longitude}`}
-                  style={tw`p-4 justify-center items-center border border-white rounded-lg m-2 w-1/3 bg-white bg-opacity-15 w-80`}
+                  style={tw`px-1 py-2 flex items-center border border-white rounded-lg m-1 bg-white bg-opacity-8 w-80`}
                   onPress={() => handleSelectPress(city.name)}
                 >
-                  <ThemedText>{city.name}</ThemedText>
+                  <ThemedText style={tw`flex justify-center`} type="subtitle">
+                    {city.name}
+                  </ThemedText>
+                  <View style={tw`w-75`}>
+                    <ThemedText style={tw`flex justify-start text-sm`}>
+                      {city.displayName}
+                    </ThemedText>
+                  </View>
                 </TouchableOpacity>
               ))}
             </View>
@@ -138,7 +219,7 @@ export default function TabTwoScreen() {
               {results.map((item) => (
                 <TouchableOpacity
                   key={`${item.latitude}-${item.longitude}`}
-                  style={tw`p-2 border-b border-gray-200`}
+                  style={tw`p-2 border-b border-gray-200 w-full`}
                   onPress={() => handlePress(item.latitude, item.longitude)}
                 >
                   <ThemedText>{item.name}</ThemedText>

@@ -14,6 +14,8 @@ const resources = {
         moonIllumination: "Moon Illumination:",
         isMoonUp: "Is the moon up?",
         isSunUp: "Is the sun up?",
+        yes: "Yes",
+        no: "No",
         dataLoading: "Loading data...",
         nextDays: "Next days forecast",
         phases: {
@@ -42,6 +44,8 @@ const resources = {
         moonIllumination: "Illumination lunaire :",
         isMoonUp: "La lune est-elle visible ?",
         isSunUp: "Le soleil est-il visible ?",
+        yes: "Oui",
+        no: "Non",
         dataLoading: "Chargement des données...",
         nextDays: "Prévisions sur les prochains jours",
         phases: {
