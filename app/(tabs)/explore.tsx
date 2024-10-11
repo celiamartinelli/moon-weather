@@ -119,17 +119,23 @@ export default function TabTwoScreen() {
           ))}
         </ScrollView> */}
         <ScrollView>
-          {results.length === 0
-            ? knownCities.map((city) => (
+          {results.length === 0 ? (
+            <View
+              style={tw`flex-row flex-wrap w-full justify-center items-center`}
+            >
+              {knownCities.map((city) => (
                 <TouchableOpacity
                   key={city.name}
-                  style={tw`p-2 border-b border-gray-200`}
-                  onPress={() => handleCityPress(city.name)}
+                  style={tw`p-4 justify-center items-center border border-white rounded-lg m-2 w-1/3 bg-white bg-opacity-15 w-80`}
+                  onPress={() => handleCityPress(city.latitude, city.longitude)}
                 >
                   <ThemedText>{city.name}</ThemedText>
                 </TouchableOpacity>
-              ))
-            : results.map((item) => (
+              ))}
+            </View>
+          ) : (
+            <View style={tw`flex-row flex-wrap`}>
+              {results.map((item) => (
                 <TouchableOpacity
                   key={`${item.latitude}-${item.longitude}`}
                   style={tw`p-2 border-b border-gray-200`}
@@ -141,6 +147,8 @@ export default function TabTwoScreen() {
                   </ThemedText>
                 </TouchableOpacity>
               ))}
+            </View>
+          )}
         </ScrollView>
       </ThemedView>
     </ParallaxScrollView>

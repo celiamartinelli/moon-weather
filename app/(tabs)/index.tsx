@@ -11,8 +11,9 @@ import {
   TouchableOpacity,
   Switch,
 } from "react-native";
+import { Animated } from "react-native";
 import React, { useState } from "react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import * as Location from "expo-location";
 import { HelloWave } from "@/components/HelloWave";
 import { ThemedText } from "@/components/ThemedText";
@@ -69,6 +70,10 @@ interface LocationData {
   lat: number;
 }
 
+const capitalizeFirstLetter = (string: string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
 export default function HomeScreen() {
   const { t, i18n } = useTranslation();
   // console.log("latitude", lat, "longitude", long);
@@ -103,6 +108,30 @@ export default function HomeScreen() {
   const route = useRoute();
   const { cityProps } = route.params || {};
   // console.log("cityProps", cityProps);
+
+  const bounceAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(bounceAnim, {
+          toValue: 1,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(bounceAnim, {
+          toValue: 0,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, [bounceAnim]);
+
+  const bounce = bounceAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -5], // Ajustez les valeurs pour contrôler l'amplitude du rebond
+  });
 
   useEffect(() => {
     setCityName(cityProps);
@@ -226,19 +255,26 @@ export default function HomeScreen() {
 
       // Vérifiez que les données de prévision existent avant de les utiliser
       if (data && data.forecast && data.forecast.forecastday) {
-        const astroData = data.forecast.forecastday.map((day: any) => ({
-          date: day.date,
-          moon_phase: day.astro.moon_phase,
-          moonrise: day.astro.moonrise,
-          moonset: day.astro.moonset,
-          illumination: day.astro.moon_illumination,
-          sunrise: day.astro.sunrise,
-          sunset: day.astro.sunset,
-          moon_image: getMoonPhaseImage(
-            day.astro.moon_phase,
-            data.location.lat
-          ),
-        }));
+        const astroData = data.forecast.forecastday.map((day: any) => {
+          const date = day.date ? new Date(day.date) : new Date();
+          const moonrise = day.astro.moonrise || "00:00";
+          const moonset = day.astro.moonset || "00:00";
+          const sunrise = day.astro.sunrise || "00:00";
+          const sunset = day.astro.sunset || "00:00";
+          const moon_phase = day.astro.moon_phase || "Unknown";
+          const illumination = day.astro.moon_illumination || "0";
+
+          return {
+            date: date.toISOString().split("T")[0], // Formate la date en YYYY-MM-DD
+            moon_phase,
+            moonrise,
+            moonset,
+            illumination,
+            sunrise,
+            sunset,
+            moon_image: getMoonPhaseImage(moon_phase, data.location.lat),
+          };
+        });
         setAstroSevenData(astroData);
         // console.log("astroData", data.forecast.forecastday);
       } else {
@@ -407,10 +443,44 @@ export default function HomeScreen() {
   };
 
   const formatTimeToFrench = (time: string) => {
-    const parsedTime = parse(time, "hh:mm a", new Date());
-    const formattedTime = format(parsedTime, "HH:mm");
-    return formattedTime.replace(":", "h");
+    try {
+      const parsedTime = parse(time, "hh:mm a", new Date());
+      const formattedTime = format(parsedTime, "HH:mm");
+      return formattedTime.replace(":", "h");
+    } catch (error) {
+      // console.error("Invalid time value:", time);
+      return "No moonset"; // Valeur par défaut en cas d'erreur
+    }
   };
+
+  const formattedDate = new Date(location.localtime).toLocaleDateString(
+    i18n.language,
+    {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }
+  );
+
+  const capitalizedDate = formattedDate
+    .split(" ")
+    .map((word) => capitalizeFirstLetter(word))
+    .join(" ");
+
+  const locationAnimationRef = useRef<LottieView>(null);
+  const [animationPaused, setAnimationPaused] = useState(false);
+
+  const handleAnimationPress = () => {
+    if (animationPaused) {
+      locationAnimationRef.current?.resume(); // Reprendre l'animation si elle est en pause
+    } else {
+      locationAnimationRef.current?.play(); // Jouer l'animation
+    }
+    setAnimationPaused(!animationPaused); // Inverser l'état de pause
+  };
+
+  // Ref pour LottieView
 
   return (
     <View style={tw`flex-1 relative pt-16 bg-bg`}>
@@ -438,7 +508,12 @@ export default function HomeScreen() {
                 <ThemedText style={tw`text-xs`}>
                   {isFrench ? "FR" : "EN"}{" "}
                 </ThemedText>
-                <Switch value={isFrench} onValueChange={toggleLanguage} />
+                <Switch
+                  value={isFrench}
+                  onValueChange={toggleLanguage}
+                  ios_backgroundColor="#343582"
+                  style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
+                />
               </View>
               <View style={tw`flex-col justify-center items-center`}>
                 <View style={tw`flex-row`}>
@@ -447,38 +522,36 @@ export default function HomeScreen() {
                 </View>
               </View>
 
-              <View>
+              <View
+                style={tw`w-20 h-20 justify-center items-center
+              `}
+              >
                 <TouchableOpacity
-                  style={tw`w-20 h-20  flex justify-center items-center`}
+                  style={tw`flex flex-row justify-center items-center`}
                   onPress={() => {
                     setResetPosition(true);
+                    handleAnimationPress();
                   }}
                 >
                   <LottieView
-                    style={tw`w-10 h-10`}
-                    source={require("../../assets/images/animation/location.json")}
-                    autoPlay
-                    loop
+                    style={tw`w-30 h-30 rounded-full justify-center items-center`}
+                    source={require("../../assets/images/animation/location-test.json")}
+                    ref={locationAnimationRef}
+                    loop={false}
+                    speed={0.6}
                   />
                 </TouchableOpacity>
               </View>
             </ThemedView>
             <View style={tw`w-full justify-center items-center mb-2`}>
-              <ThemedText style={tw`font-bold`}>
-                {new Date(location.localtime).toLocaleDateString(
-                  i18n.language,
-                  {
-                    weekday: "long",
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  }
-                )}
-              </ThemedText>
+              <ThemedText style={tw`font-bold`}>{capitalizedDate}</ThemedText>
             </View>
 
-            <Image
-              style={tw`w-70 h-70 mx-auto`}
+            <Animated.Image
+              style={[
+                tw`w-70 h-70 mx-auto`,
+                { transform: [{ translateY: bounce }] },
+              ]}
               source={
                 urlImg ||
                 require("../../assets/images/moon/north-full-moon.png")
