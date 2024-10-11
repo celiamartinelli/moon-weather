@@ -534,8 +534,8 @@ export default function HomeScreen() {
                   }}
                 >
                   <LottieView
-                    style={tw`w-30 h-30 rounded-full justify-center items-center`}
-                    source={require("../../assets/images/animation/location-test.json")}
+                    style={tw`w-12 h-12 rounded-full justify-center items-center`}
+                    source={require("../../assets/images/animation/location.json")}
                     ref={locationAnimationRef}
                     loop={false}
                     speed={0.6}

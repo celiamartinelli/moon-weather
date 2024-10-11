@@ -47,7 +47,7 @@ export default function TabTwoScreen() {
       `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
     );
     const data = await response.json();
-    // console.log("data", JSON.stringify(data, null, 2));
+    console.log("data", JSON.stringify(data, null, 2));
   };
 
   const handleSearch = () => {
@@ -62,8 +62,12 @@ export default function TabTwoScreen() {
     navigation.navigate("index", {
       cityProps: cityName,
     });
-    setCityName(null);
-    results.length = 0;
+  };
+
+  const handleSelectPress = (cityProps: string) => {
+    navigation.navigate("index", {
+      cityProps: cityProps,
+    });
   };
 
   const knownCities = [
@@ -73,10 +77,6 @@ export default function TabTwoScreen() {
     { name: "London", latitude: 51.5074, longitude: -0.1278 },
     { name: "Sydney", latitude: -33.8688, longitude: 151.2093 },
   ];
-
-  const handleCityPress = (cityName: string) => {
-    handlePress(cityName);
-  };
 
   return (
     <ParallaxScrollView
@@ -100,7 +100,7 @@ export default function TabTwoScreen() {
             onChangeText={setCityName}
           />
           <TouchableOpacity
-            style={tw`bg-blue-500 p-2 rounded-lg`}
+            style={tw`bg-purple p-2 rounded-lg`}
             onPress={handleSearch}
           >
             <Text style={tw`text-white`}>{t(`explore.search`)}</Text>
@@ -125,9 +125,9 @@ export default function TabTwoScreen() {
             >
               {knownCities.map((city) => (
                 <TouchableOpacity
-                  key={city.name}
+                  key={`${city.latitude}-${city.longitude}`}
                   style={tw`p-4 justify-center items-center border border-white rounded-lg m-2 w-1/3 bg-white bg-opacity-15 w-80`}
-                  onPress={() => handleCityPress(city.latitude, city.longitude)}
+                  onPress={() => handleSelectPress(city.name)}
                 >
                   <ThemedText>{city.name}</ThemedText>
                 </TouchableOpacity>

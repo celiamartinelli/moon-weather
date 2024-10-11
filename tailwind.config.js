@@ -7,6 +7,7 @@ module.exports = {
         celadon: "#77d7c9",
         lavande: "#c89eff",
         celeste: "#bbdcff",
+        purple: "#343582",
         bg: "#0d1126",
       },
     },
