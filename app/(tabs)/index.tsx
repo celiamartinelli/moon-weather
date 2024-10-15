@@ -212,7 +212,7 @@ export default function HomeScreen() {
       setResetPosition(false);
     } catch (error) {
       console.error("Erreur lors de la requête API", error);
-      setTimeout(() => setLoading(false), 2000);
+      setTimeout(() => setLoading(false), 1000);
     }
   };
 
@@ -311,7 +311,7 @@ export default function HomeScreen() {
 
   const MoonPhaseCard = ({ item }: { item: any }) => (
     <View
-      style={tw`bg-white bg-opacity-15 rounded-lg p-2 m-1 flex items-center shadow-md w-80`}
+      style={tw`bg-white bg-opacity-15 rounded-lg p-2 m-1 flex items-center w-80`}
     >
       {item.moon_image && (
         <Image style={tw`w-20 h-20 mx-auto`} source={item.moon_image} />
@@ -331,7 +331,7 @@ export default function HomeScreen() {
       </View>
 
       <View
-        style={tw`flex-row bg-white bg-opacity-10 rounded-lg mb-5 w-70 justify-center items-center shadow-md`}
+        style={tw`flex-row bg-white bg-opacity-10 rounded-lg mb-5 w-70 justify-center items-center`}
       >
         <View style={tw`flex-col justify-center items-center p-8 `}>
           <Image
@@ -485,7 +485,7 @@ export default function HomeScreen() {
   return (
     <View style={tw`flex-1 relative pt-16 bg-bg`}>
       <LottieView
-        style={tw`top-0`}
+        style={tw`w-full h-200 absolute`}
         resizeMode="cover"
         source={require("../../assets/images/animation/Background.json")}
         autoPlay
@@ -579,7 +579,7 @@ export default function HomeScreen() {
                     </ThemedText>
                   </View>
                   <View
-                    style={tw`flex-row justify-center mb-5 w-70 bg-white bg-opacity-15 rounded-lg shadow-xl`}
+                    style={tw`flex-row justify-center mb-5 w-70 bg-white bg-opacity-15 rounded-lg `}
                   >
                     <View style={tw`flex-col justify-center items-center p-8`}>
                       <Image
